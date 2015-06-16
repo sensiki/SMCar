@@ -1,0 +1,464 @@
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MOTOR
+OBJECT MODULE PLACED IN motor.obj
+COMPILER INVOKED BY: d:\Keil_v5\C51\BIN\C51.EXE Source\motor.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\µç»ú¿ØÖÆ) DEBUG OBJECT
+                    -EXTEND PRINT(.\motor.lst) TABS(2) OBJECT(motor.obj)
+
+line level    source
+
+   1          /*
+   2          °æÈ¨ÉùÃ÷£º
+   3          WIFI»úÆ÷ÈËÍø¡¤»úÆ÷ÈË´´Òâ¹¤×÷ÊÒ°æÈ¨ËùÓÐ www.wifi-robots.com
+   4          Äú¿ÉÒÔÈÎÒâÐÞ¸Ä±¾³ÌÐò£¬²¢Ó¦ÓÃÓÚ×ÔÐÐÑÐ·¢µÄÖÇÄÜÐ¡³µ»úÆ÷ÈË¼°ÆäËûµç×Ó²úÆ·ÉÏ£¬µ«ÊÇ½ûÖ¹ÓÃÓÚÉÌÒµÄ²Àû¡£
+   5          By WIFI»úÆ÷ÈËÍø¡¤»úÆ÷ÈË´´Òâ¹¤×÷ÊÒ
+   6          */
+   7          #include "motor.h"
+   8          #include "uart.h"
+   9          #include "timer.h"
+  10          #include "mem.h"
+  11          #include "OLED12864.h"
+  12          
+  13          #define m0 0//ºÚÏßm1,°×Ïßm0
+  14          #define m1 1
+  15          
+  16          #define lenth 68000   //????:10000--»100--»500--»2000--80000--76000--68000
+  17          #define width 27000   //500--»10-->2000--»60000--30000---»27000
+  18          #define check_right 500 //2000--»20--»200--»500
+  19          #define midl left1
+  20          #define midr right5 
+  21          
+  22          
+  23          uchar Cruising_Flag =0x00;
+  24          uchar  Robots_Run_Status;
+  25          uchar Pre_Cruising_Flag = 0x00;
+  26          extern uint16 se_timer[8];
+  27          extern uchar Duty_left,Duty_right; //×óÓÒÕ¼¿Õ±È±êÖ¾£¬È¡1--100
+  28          
+  29          void delay(long int Delay_time)//????
+  30           {
+  31   1       uint t=Delay_time;
+  32   1       while(t--);
+  33   1       }
+  34          
+  35          /**µç»ú³õÊ¼»¯**/
+  36          void Motor_Init(void)
+  37          {
+  38   1        MOTOR_A_EN=1;
+  39   1        MOTOR_B_EN=1;
+  40   1        MOTOR_GO_STOP;
+  41   1      }
+  42          //¸úËæÄ£Ê½
+  43          void Follow_Track(void)
+  44          {
+  45   1            switch(Robots_Run_Status)
+  46   1           {
+  47   2            case 0x01:MOTOR_GO_RIGHT;     break;    
+  48   2            case 0x02:MOTOR_GO_LEFT;     break;    
+  49   2            case 0x03:MOTOR_GO_FORWARD;  break;    
+  50   2            case 0x04:MOTOR_GO_STOP;  break;  
+  51   2           }
+  52   1      
+  53   1          
+  54   1             if(Input_Detect1 == 1) //ÖÐ¼ä´«¸ÐÆ÷OK
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 2   
+
+  55   1            {
+  56   2            
+  57   2              if((Input_Detect0 == 0)&& (Input_Detect2 == 0)) //Á½±ßÍ¬Ê±Ì½²âµ½ÕÏ°­Îï
+  58   2            {
+  59   3            
+  60   3               Robots_Run_Status=0x04;//Í£Ö¹ 
+  61   3            } 
+  62   2             
+  63   2            if((Input_Detect0 == 0)&& (Input_Detect2 == 1))//×ó²àÕÏ°­Îï
+  64   2            {
+  65   3            
+  66   3              Robots_Run_Status=0x01;//ÓÒ×ª 
+  67   3            }
+  68   2          
+  69   2            if((Input_Detect0 == 1)&& (Input_Detect2 == 0))//ÓÒ²àÕÏ°­Îï
+  70   2            {
+  71   3              Robots_Run_Status=0x02;//×ó×ª 
+  72   3            }
+  73   2             
+  74   2            if((Input_Detect0 == 1)&& (Input_Detect2 == 1))//ÎÞÈÎºÎÕÏ°­Îï
+  75   2            {
+  76   3              Robots_Run_Status=0x03;//Ö±ÐÐ 
+  77   3            }
+  78   2            }
+  79   1            else
+  80   1            {
+  81   2                 Robots_Run_Status=0x04;
+  82   2            }
+  83   1      
+  84   1      }
+  85          
+  86          //±ÜÕÏÄ£Ê½
+  87          void Avoiding(void)
+  88          {
+  89   1             switch(Robots_Run_Status)
+  90   1           {
+  91   2            case 0x01:MOTOR_GO_RIGHT;     break;    
+  92   2            case 0x02:MOTOR_GO_LEFT;     break;    
+  93   2            case 0x03:MOTOR_GO_FORWARD;  break;    
+  94   2            case 0x04:MOTOR_GO_STOP;  break;
+  95   2            case 0x05:MOTOR_GO_BACK; break;      
+  96   2           }
+  97   1      
+  98   1              if((left2 == 1) || (right4 == 1) || (Input_Detect1==0))
+  99   1            {
+ 100   2              
+ 101   2              Robots_Run_Status=0x04;
+ 102   2            } 
+ 103   1            else //·ñÔòµç»úÖ´ÐÐÇ°½ø¶¯×÷
+ 104   1            {
+ 105   2                Robots_Run_Status=0x03;
+ 106   2            }
+ 107   1      }
+ 108          //ÊÖ±Û¶¯×÷Õ¹Ê¾
+ 109          void ARMShow(void)
+ 110          {
+ 111   1      
+ 112   1        se_timer[0]=100;
+ 113   1        Delay_Ms(1000);
+ 114   1        se_timer[1]=70;
+ 115   1        Delay_Ms(1000);
+ 116   1        se_timer[2]=60;
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 3   
+
+ 117   1        Delay_Ms(1000);
+ 118   1        se_timer[3]=50;
+ 119   1        Delay_Ms(1000);
+ 120   1      
+ 121   1        se_timer[3]=81;
+ 122   1        Delay_Ms(1000);
+ 123   1        se_timer[2]=160;
+ 124   1        Delay_Ms(1000);
+ 125   1        se_timer[1]=120;
+ 126   1        Delay_Ms(1000);
+ 127   1        se_timer[0]=140;
+ 128   1        Delay_Ms(1000);
+ 129   1      }
+ 130          
+ 131          //ÊÖ±Û¶¯×÷Õ¹Ê¾
+ 132          void HeadShow(void)
+ 133          {
+ 134   1         Beep=~Beep;
+ 135   1        se_timer[7]=170;
+ 136   1        Delay_Ms(1000);
+ 137   1      
+ 138   1        se_timer[7]=0;
+ 139   1        Delay_Ms(1000);
+ 140   1      }
+ 141          
+ 142          //·¢ËÍ³¬Éù²¨
+ 143          void Send_wave(void)
+ 144          {
+ 145   1          uint16 i;
+ 146   1      
+ 147   1        Trig = 1;
+ 148   1        for(i=0;i<150;i++);
+ 149   1        Trig = 0;
+ 150   1      }
+ 151          //»ñµÃ¾àÀëÖµ
+ 152          uchar Get_Distance(void)
+ 153          {
+ 154   1          uint32 Distance = 0;
+ 155   1      
+ 156   1          Send_wave();
+ 157   1          TH1 = 0;
+ 158   1          TL1 = 0;
+ 159   1        while(TH1<250 && Echo!= 1);   
+ 160   1        if(TH1 <= 250)  //²â¾à·¶Î§<0.5M
+ 161   1        {
+ 162   2           TH1 = 0;
+ 163   2           TL1 = 0;
+ 164   2           while(Echo == 1);
+ 165   2           Distance = TH1;
+ 166   2           Distance = Distance*256;
+ 167   2           Distance = Distance + TL1;
+ 168   2           Distance = Distance * 17; 
+ 169   2           Distance = Distance / 22118;
+ 170   2           return (uchar)(Distance&0xFF);
+ 171   2        }
+ 172   1      }
+ 173          //Ñ²ÏßÄ£Ê½
+ 174          void FollowLine(void)
+ 175          {
+ 176   1            if(Get_Distance()<0x0A)
+ 177   1          {
+ 178   2            stop();//Í£Ö¹ 
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 4   
+
+ 179   2          }
+ 180   1            else
+ 181   1          {
+ 182   2      
+ 183   2         if(right5==m1){line_right();}
+ 184   2         else 
+ 185   2         if(left1==m1){line_left();}
+ 186   2         else
+ 187   2         if(left2==m1){correct_left();}
+ 188   2         else
+ 189   2         if(right4==m1){correct_right();}
+ 190   2         else
+ 191   2             if(mid3==m1)
+ 192   2         line_straight();
+ 193   2             else
+ 194   2               stop();
+ 195   2      
+ 196   2          }
+ 197   1      }
+ 198          //Í¨¹ýÀ×´ï±ÜÕÏ
+ 199          void AvoidByRadar(void)
+ 200          {
+ 201   1         if(Get_Distance()<0x1A)//Èç¹ûÀ×´ï»Ø²¨Êý¾ÝÐ¡ÓÚ10ÀåÃ×´¥·¢
+ 202   1        {
+ 203   2           MOTOR_GO_STOP;
+ 204   2        }
+ 205   1        else
+ 206   1        {
+ 207   2          MOTOR_GO_FORWARD;
+ 208   2        }
+ 209   1      
+ 210   1      }
+ 211          void Send_Distance(void)
+ 212          {
+ 213   1           UART_send_byte(0xFF);
+ 214   1           UART_send_byte(0x03);
+ 215   1           UART_send_byte(0x00);
+ 216   1           UART_send_byte(Get_Distance());
+ 217   1           UART_send_byte(0xFF);
+ 218   1           Delay_Ms(1000);   
+ 219   1      }
+ 220          //Ä£Ê½Ö´ÐÐ×Óº¯Êý£¬¸ù¾Ý±êÖ¾Î»½øÐÐÅÐ¶Ï
+ 221          void Cruising_Mod(void)
+ 222          {
+ 223   1             
+ 224   1         if(Pre_Cruising_Flag != Cruising_Flag)
+ 225   1         {
+ 226   2             if(Pre_Cruising_Flag != 0)
+ 227   2           {
+ 228   3               MOTOR_GO_STOP; 
+ 229   3           }
+ 230   2      
+ 231   2             Pre_Cruising_Flag =  Cruising_Flag;
+ 232   2         }  
+ 233   1      
+ 234   1        switch(Cruising_Flag)
+ 235   1        {
+ 236   2           case 0x01:Follow_Track(); break;//¸úËæÄ£Ê½
+ 237   2           case 0x02:FollowLine(); break;//Ñ²ÏßÄ£Ê½
+ 238   2           case 0x03:Avoiding(); break;//±ÜÕÏÄ£Ê½
+ 239   2           case 0x04:AvoidByRadar();break;//³¬Éù²¨±ÚÕÏÄ£Ê½
+ 240   2           case 0x05:ARMShow();break;
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 5   
+
+ 241   2           case 0x06:HeadShow();break;
+ 242   2           default:break;
+ 243   2        }  
+ 244   1      }
+ 245          
+ 246          
+ 247          void Delay_ForBarrier(uint32 t)
+ 248          {  
+ 249   1          uint16 i;
+ 250   1        while(t--)
+ 251   1        {
+ 252   2           for(i=0;i<1050;i++);
+ 253   2        }
+ 254   1      }
+ 255          //³µµÆ
+ 256          void MainLight_Init(void)
+ 257          {
+ 258   1         MAINLIGHT_TURNOFF;
+ 259   1      }
+ 260          //·äÃùÆ÷
+ 261          void MainBuzzer_Init(void)
+ 262          {
+ 263   1         MAINBUZZER_TURNOFF;
+ 264   1      }
+ 265          
+ 266          //-----------------------------------------------
+ 267          void correct_left()//Ïò×ó½ÃÕý
+ 268           {
+ 269   1         Duty_left =correct_speed;
+ 270   1         Duty_right=full_speed_right;
+ 271   1         MOTOR_A_CON1=1;
+ 272   1         MOTOR_A_CON2=0;
+ 273   1         MOTOR_B_CON1=1;
+ 274   1         MOTOR_B_CON2=0;
+ 275   1       }
+ 276          //------------------------------------------------
+ 277           void correct_right()//ÏòÓÒ½ÃÕý
+ 278           {
+ 279   1         Duty_left =full_speed_right;
+ 280   1         Duty_right=correct_speed;
+ 281   1         MOTOR_A_CON1=1;
+ 282   1         MOTOR_A_CON2=0;
+ 283   1         MOTOR_B_CON1=1;
+ 284   1         MOTOR_B_CON2=0;
+ 285   1       }
+ 286          //--------------------------------------------------
+ 287          void turn_left()//×ó×ª
+ 288          {
+ 289   1        Duty_left =turn_speed_left;
+ 290   1        Duty_right=turn_speed_right;
+ 291   1        MOTOR_A_CON1=1;  //???????,????,
+ 292   1        MOTOR_A_CON2=0;
+ 293   1        MOTOR_B_CON1=0;
+ 294   1        MOTOR_B_CON2=1;     
+ 295   1      }
+ 296          //---------------------------------------------------
+ 297          void turn_right()//ÓÒ×ª
+ 298          {
+ 299   1        Duty_left =turn_speed_left;
+ 300   1        Duty_right=turn_speed_right;
+ 301   1        MOTOR_A_CON1=0;   //???????,????,
+ 302   1        MOTOR_A_CON2=1; 
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 6   
+
+ 303   1        MOTOR_B_CON1=1; 
+ 304   1        MOTOR_B_CON2=0; 
+ 305   1      }
+ 306          //-----------------------------------------------------
+ 307          void straight() //Ö±ÐÐ
+ 308          {
+ 309   1        Duty_left =full_speed_left; //??????????,????????
+ 310   1        Duty_right=full_speed_right;  //?????????????,????????,????????????
+ 311   1        MOTOR_A_CON1=1;   //???????,????,
+ 312   1        MOTOR_A_CON2=0; 
+ 313   1        MOTOR_B_CON1=1; 
+ 314   1        MOTOR_B_CON2=0; 
+ 315   1      }
+ 316          void stop() //Í£Ö¹
+ 317          {
+ 318   1        Duty_left =0; //??????????,????????
+ 319   1        Duty_right=0; //?????????????,????????,????????????
+ 320   1        MOTOR_A_CON1=0;   //???????,????,
+ 321   1        MOTOR_A_CON2=0; 
+ 322   1        MOTOR_B_CON1=0; 
+ 323   1        MOTOR_B_CON2=0; 
+ 324   1      }
+ 325          //-----------------------------------------------------
+ 326          void line_straight()reentrant //?????reentrant??????,//???????
+ 327          {
+ 328   1        straight();
+ 329   1        if(right5==m1){line_right();}
+ 330   1        else  
+ 331   1        if(left1==m1){line_left();}
+ 332   1        else
+ 333   1        if(left2==m1)         //?????,??????,??2,4???????????????,?????????
+ 334   1          while(left2==m1)
+ 335   1           {correct_left();
+ 336   2             if(right5==m1)
+ 337   2                {
+ 338   3             line_right();
+ 339   3             goto label3;
+ 340   3             }
+ 341   2           else if(left1==m1)
+ 342   2           {line_left();
+ 343   3             goto label3;}
+ 344   2           }
+ 345   1        else 
+ 346   1        if(right4==m1)         //?????,??????,??2,4???????????????,?????????
+ 347   1         while(right4==m1)
+ 348   1          {correct_right();
+ 349   2           if(right5==m1)
+ 350   2             { line_right();  goto label3;}
+ 351   2           else if(left1==m1)
+ 352   2          {line_left();goto label3;}
+ 353   2        }
+ 354   1        else
+ 355   1        if((left1==m0)&&(left2==m0)&&(mid3==m0)&&(right4==m0)&&(right5==m0))
+ 356   1          {
+ 357   2          straight();
+ 358   2          //delay(lenth);
+ 359   2          while(right4==m0) //??????mid3,?????????,??right4;???,??left2??
+ 360   2            {turn_right();}
+ 361   2          if(mid3==m1)
+ 362   2            {line_straight();}
+ 363   2        
+ 364   2        }
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 7   
+
+ 365   1      
+ 366   1        label3: ; //?????
+ 367   1      }
+ 368          //-------------------------------------------------------------------------
+ 369          void line_right() //??????
+ 370          {
+ 371   1        straight();//??????????????????
+ 372   1        delay(lenth);
+ 373   1        if(mid3==m1)
+ 374   1        {
+ 375   2          turn_right();//????????
+ 376   2      label:delay(width); //?width??????mid3?????????????
+ 377   2          if(mid3==m0)
+ 378   2            while(right4==m0)
+ 379   2             {}
+ 380   2          else
+ 381   2              goto label;
+ 382   2          
+ 383   2         }
+ 384   1      
+ 385   1        else
+ 386   1        if(mid3==m0)
+ 387   1           {
+ 388   2             turn_right();
+ 389   2             while(right4==m0)
+ 390   2               {} 
+ 391   2             if(midr==m1)
+ 392   2               {line_straight();}
+ 393   2             }     
+ 394   1      }
+ 395          //-----------------------------------------------------------------
+ 396          void line_left() //???????
+ 397          { 
+ 398   1        while(left1==m1)
+ 399   1        {
+ 400   2        if(right5==m1) 
+ 401   2        {
+ 402   3        line_right();
+ 403   3        goto label2;
+ 404   3        } 
+ 405   2         }
+ 406   1      
+ 407   1         delay(check_right);//???????,????????,????????,??????????,
+ 408   1               //?????,??line_right()??
+ 409   1        if(right5==m1) 
+ 410   1        {
+ 411   2        line_right();
+ 412   2        goto label2;
+ 413   2        }
+ 414   1      
+ 415   1         if((mid3==m1)||(left2==m1)||(right4==m1)){line_straight();}
+ 416   1          else
+ 417   1          {
+ 418   2             while(left2==m0)
+ 419   2              {turn_left();}
+ 420   2             if(midl==m1)
+ 421   2                line_straight();    
+ 422   2          }
+ 423   1      label2: ;
+ 424   1      }
+*** WARNING C316 IN LINE 424 OF Source\motor.c: unterminated conditionals
+*** WARNING C291 IN LINE 172 OF Source\motor.c: not every exit path returns a value
+C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 8   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1129    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3      12
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  0 ERROR(S)

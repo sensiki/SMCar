@@ -1,0 +1,65 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.14.2
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: siki sen, person, LIC=BU3Z9-4VABB-38HFK-ZW24D-K6DJF-N1QIA
+ 
+Tool Versions:
+Toolchain:       PK51 Prof. Developers Kit  Version: 9.54
+Toolchain Path:  d:\Keil_v5\C51\BIN
+C Compiler:      C51.exe V9.54
+Assembler:       A51.exe V8.02c
+Linker/Locator:  BL51.exe V6.22
+Library Manager: LIB51.exe V4.30.1.0
+Hex Converter:   OH51.exe V2.7.0.0
+CPU DLL:         S8051.DLL V3.100.0.0
+Dialog DLL:      DP51.DLL V2.62.0.1
+    Target DLL: VDM51.dll
+Dialog DLL:      TP51.DLL V2.58
+ 
+<h2>Project:</h2>
+E:\GitHub\SMCar\motor_con.uvproj
+Project File Date:  06/11/2015
+
+<h2>Output:</h2>
+Rebuild target 'Target 1'
+compiling main.c...
+Source\main.c(44): warning C206: 'Cruising_Mod': missing function-prototype
+Source\main.c(47): warning C316: unterminated conditionals
+compiling motor.c...
+Source\motor.c(424): warning C316: unterminated conditionals
+Source\motor.c(172): warning C291: not every exit path returns a value
+compiling timer.c...
+compiling uart.c...
+Source\uart.c(230): warning C316: unterminated conditionals
+compiling SelfTest.c...
+compiling OLED12864.c...
+Source\OLED12864.c(192): warning C316: unterminated conditionals
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?SEND_DISTANCE?MOTOR
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DELAY_FORBARRIER?MOTOR
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_UART_SEND?UART
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?LCD_CLS?OLED12864
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_LCD_P16X16CH?OLED12864
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DRAW_BMP?OLED12864
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?TIMER_FOR_IR?IR
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_LCD_P6X8STR?OLED12864
+    CALLER1: ?PR?UART_INTERRUPT_RECEIVE?UART
+    CALLER2: ?C_C51STARTUP
+Program Size: data=84.3 xdata=203 code=8817
+creating hex file from "motor_con"...
+"motor_con" - 0 Error(s), 14 Warning(s).
+</pre>
+</body>
+</html>
