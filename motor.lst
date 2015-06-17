@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 1   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MOTOR
@@ -62,7 +62,7 @@ line level    source
   52   1      
   53   1          
   54   1             if(Input_Detect1 == 1) //中间传感器OK
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 2   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 2   
 
   55   1            {
   56   2            
@@ -126,7 +126,7 @@ line level    source
  114   1        se_timer[1]=70;
  115   1        Delay_Ms(1000);
  116   1        se_timer[2]=60;
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 3   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 3   
 
  117   1        Delay_Ms(1000);
  118   1        se_timer[3]=50;
@@ -190,7 +190,7 @@ line level    source
  176   1            if(Get_Distance()<0x0A)
  177   1          {
  178   2            stop();//停止 
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 4   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 4   
 
  179   2          }
  180   1            else
@@ -254,7 +254,7 @@ line level    source
  238   2           case 0x03:Avoiding(); break;//避障模式
  239   2           case 0x04:AvoidByRadar();break;//超声波壁障模式
  240   2           case 0x05:ARMShow();break;
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 5   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 5   
 
  241   2           case 0x06:HeadShow();break;
  242   2           default:break;
@@ -286,20 +286,20 @@ line level    source
  268           {
  269   1         Duty_left =correct_speed;
  270   1         Duty_right=full_speed_right;
- 271   1         MOTOR_A_CON1=1;
- 272   1         MOTOR_A_CON2=0;
- 273   1         MOTOR_B_CON1=1;
- 274   1         MOTOR_B_CON2=0;
+ 271   1         MOTOR_A_CON1=0;
+ 272   1         MOTOR_A_CON2=1;
+ 273   1         MOTOR_B_CON1=0;
+ 274   1         MOTOR_B_CON2=1;
  275   1       }
  276          //------------------------------------------------
  277           void correct_right()//向右矫正
  278           {
  279   1         Duty_left =full_speed_right;
  280   1         Duty_right=correct_speed;
- 281   1         MOTOR_A_CON1=1;
- 282   1         MOTOR_A_CON2=0;
- 283   1         MOTOR_B_CON1=1;
- 284   1         MOTOR_B_CON2=0;
+ 281   1         MOTOR_A_CON1=0;
+ 282   1         MOTOR_A_CON2=1;
+ 283   1         MOTOR_B_CON1=0;
+ 284   1         MOTOR_B_CON2=1;
  285   1       }
  286          //--------------------------------------------------
  287          void turn_left()//左转
@@ -318,7 +318,7 @@ line level    source
  300   1        Duty_right=turn_speed_right;
  301   1        MOTOR_A_CON1=0;   //???????,????,
  302   1        MOTOR_A_CON2=1; 
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 6   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 6   
 
  303   1        MOTOR_B_CON1=1; 
  304   1        MOTOR_B_CON2=0; 
@@ -328,10 +328,10 @@ line level    source
  308          {
  309   1        Duty_left =full_speed_left; //??????????,????????
  310   1        Duty_right=full_speed_right;  //?????????????,????????,????????????
- 311   1        MOTOR_A_CON1=1;   //???????,????,
- 312   1        MOTOR_A_CON2=0; 
- 313   1        MOTOR_B_CON1=1; 
- 314   1        MOTOR_B_CON2=0; 
+ 311   1        MOTOR_A_CON1=0;   //???????,????,
+ 312   1        MOTOR_A_CON2=1; 
+ 313   1        MOTOR_B_CON1=0; 
+ 314   1        MOTOR_B_CON2=1; 
  315   1      }
  316          void stop() //停止
  317          {
@@ -382,7 +382,7 @@ line level    source
  362   2            {line_straight();}
  363   2        
  364   2        }
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 7   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 7   
 
  365   1      
  366   1        label3: ; //?????
@@ -446,7 +446,7 @@ line level    source
  424   1      }
 *** WARNING C316 IN LINE 424 OF Source\motor.c: unterminated conditionals
 *** WARNING C291 IN LINE 172 OF Source\motor.c: not every exit path returns a value
-C51 COMPILER V9.54   MOTOR                                                                 06/16/2015 09:53:32 PAGE 8   
+C51 COMPILER V9.54   MOTOR                                                                 06/17/2015 16:44:20 PAGE 8   
 
 
 

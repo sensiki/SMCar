@@ -268,20 +268,20 @@ void correct_left()//向左矫正
  {
    Duty_left =correct_speed;
    Duty_right=full_speed_right;
-   MOTOR_A_CON1=1;
-   MOTOR_A_CON2=0;
-   MOTOR_B_CON1=1;
-   MOTOR_B_CON2=0;
+   MOTOR_A_CON1=0;
+   MOTOR_A_CON2=1;
+   MOTOR_B_CON1=0;
+   MOTOR_B_CON2=1;
  }
 //------------------------------------------------
  void correct_right()//向右矫正
  {
    Duty_left =full_speed_right;
    Duty_right=correct_speed;
-   MOTOR_A_CON1=1;
-   MOTOR_A_CON2=0;
-   MOTOR_B_CON1=1;
-   MOTOR_B_CON2=0;
+   MOTOR_A_CON1=0;
+   MOTOR_A_CON2=1;
+   MOTOR_B_CON1=0;
+   MOTOR_B_CON2=1;
  }
 //--------------------------------------------------
 void turn_left()//左转
@@ -308,10 +308,10 @@ void straight()	//直行
 {
   Duty_left =full_speed_left;	//??????????,????????
   Duty_right=full_speed_right;	//?????????????,????????,????????????
-  MOTOR_A_CON1=1;	  //???????,????,
-  MOTOR_A_CON2=0;	
-  MOTOR_B_CON1=1;	
-  MOTOR_B_CON2=0; 
+  MOTOR_A_CON1=0;	  //???????,????,
+  MOTOR_A_CON2=1;	
+  MOTOR_B_CON1=0;	
+  MOTOR_B_CON2=1; 
 }
 void stop()	//停止
 {
