@@ -11,6 +11,9 @@ By WIFI机器人网·机器人创意工作室
 #include "type.h"
 #include "config.h"
 
+extern uchar Duty_left,Duty_right; //左右占空比标志，取1--100
+extern uchar  Robots_Run_Status;
+
 void Motor_Init(void);//声明电机驱动函数
 void Delay_ForBarrier(uint32);//声明延时函数
 void MainLight_Init(void);
@@ -25,12 +28,14 @@ void stop()	;
 void straight();
 void turn_left();
 void turn_right();
+uchar Get_Distance(void);
+void Send_wave(void);
 
-#define MOTOR_GO_FORWARD   MOTOR_A_CON1=0;MOTOR_A_CON2=1;MOTOR_B_CON1=0;MOTOR_B_CON2=1;LED1=0;LED2=1;LED3=1;LED4=1 //车体前进	                            
-#define MOTOR_GO_BACK	   MOTOR_A_CON1=1;MOTOR_A_CON2=0;MOTOR_B_CON1=1;MOTOR_B_CON2=0;LED1=1;LED2=0;LED3=1;LED4=1 //车体后退
-#define MOTOR_GO_RIGHT	   MOTOR_A_CON1=0;MOTOR_A_CON2=1;MOTOR_B_CON1=1;MOTOR_B_CON2=0;LED1=1;LED2=1;LED3=0;LED4=1 //车体右转
-#define MOTOR_GO_LEFT	   MOTOR_A_CON1=1;MOTOR_A_CON2=0;MOTOR_B_CON1=0;MOTOR_B_CON2=1;LED1=1;LED2=1;LED3=1;LED4=0 //车体左转
-#define MOTOR_GO_STOP	   MOTOR_A_CON1=0;MOTOR_A_CON2=0;MOTOR_B_CON1=0;MOTOR_B_CON2=0;LED1=1;LED2=1;LED3=1;LED4=1 //车体停止
+#define MOTOR_GO_FORWARD   MOTOR_A_CON1=0;MOTOR_A_CON2=1;MOTOR_B_CON1=0;MOTOR_B_CON2=1;LED1=0;LED2=1;LED3=1;LED4=1;Robots_Run_Status=0x03; //车体前进	                            
+#define MOTOR_GO_BACK	   MOTOR_A_CON1=1;MOTOR_A_CON2=0;MOTOR_B_CON1=1;MOTOR_B_CON2=0;LED1=1;LED2=0;LED3=1;LED4=1;  //车体后退
+#define MOTOR_GO_RIGHT	   MOTOR_A_CON1=0;MOTOR_A_CON2=1;MOTOR_B_CON1=1;MOTOR_B_CON2=0;LED1=1;LED2=1;LED3=0;LED4=1; //车体右转
+#define MOTOR_GO_LEFT	   MOTOR_A_CON1=1;MOTOR_A_CON2=0;MOTOR_B_CON1=0;MOTOR_B_CON2=1;LED1=1;LED2=1;LED3=1;LED4=0; //车体左转
+#define MOTOR_GO_STOP	   MOTOR_A_CON1=0;MOTOR_A_CON2=0;MOTOR_B_CON1=0;MOTOR_B_CON2=0;LED1=1;LED2=1;LED3=1;LED4=1; //车体停止
 #define IR_SEND_LED_ON	 LED4=1;LED5=0;LED6=1
 #define IR_SEND_LED_OFF	 LED4=0;LED5=1;LED6=0;
 #define MAINLIGHT_TURNON   MAINLIGHT_CON=1;

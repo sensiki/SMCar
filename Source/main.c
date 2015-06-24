@@ -29,13 +29,16 @@ void main(void)
 		TestApp_Init();
 	}
 	#endif
-	
+	LCD_P6x8Str(16,6,"UART_init!       "); 
 	UART_init();
-
-	Timer0_Init();
-	Timer1_Init();
+	LCD_P6x8Str(16,6,"Motor_Init!      "); 
 	Motor_Init();
-	Init_Steer();
+	LCD_P6x8Str(16,6,"Timer0_Init!     "); 
+	Timer0_Init();
+	LCD_P6x8Str(16,6,"Timer1_Init!     "); 
+	Timer1_Init();
+	
+	//Init_Steer();
 
 	LCD_P6x8Str(16,6,"Working!         ");    
 

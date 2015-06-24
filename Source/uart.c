@@ -21,7 +21,8 @@ extern uchar IR_Type;
 extern uchar IR_Num;
 extern uchar Cruising_Flag;
 extern uint16 Uart_timeout_count;
-
+extern uchar  Robots_Run_Status;
+extern uchar Duty_left,Duty_right; //左右占空比标志，取1--100
 
 void UART_init(void)
 {
@@ -67,11 +68,22 @@ void Communication_Decode(void)
 	{
 		switch(buffer[1])
 		{
-			case 0x01:MOTOR_GO_FORWARD; return;
-			case 0x02:MOTOR_GO_BACK;    return;
-			case 0x03:MOTOR_GO_LEFT;    return;
-		  case 0x04:MOTOR_GO_RIGHT;   return;
-			case 0x00:MOTOR_GO_STOP;    return;
+			case 0x01:
+					MOTOR_GO_FORWARD; 
+			Robots_Run_Status=0x03;
+			return;
+			case 0x02:MOTOR_GO_BACK;   
+			Robots_Run_Status=0x05;//停止 			
+			return;
+			case 0x03:MOTOR_GO_LEFT;
+			Robots_Run_Status=0x02;//左转 
+			return;
+		  case 0x04:MOTOR_GO_RIGHT;   
+			Robots_Run_Status=0x01;//右转
+			return;
+			case 0x00:MOTOR_GO_STOP;    
+			Robots_Run_Status=0x04;//停止 
+			return;
 			default: return;
 		}	
 	}
@@ -90,6 +102,16 @@ void Communication_Decode(void)
 			case 0x07:se_timer[6]=buffer[2]; return;
 			case 0x08:se_timer[7]=buffer[2]; return;
 			default : return;
+		}
+	}
+	else if(buffer[0]==0x02)
+	{
+		switch(buffer[1])
+		{
+			case 0x01:Duty_left=buffer[2]*10;
+				break;
+			case 0x02:Duty_right=buffer[2]*10;
+				break;
 		}
 	}
 	else if(buffer[0]==0x04)	  //车灯控制使用灌电流方式	FF040100FF  FF040000FF

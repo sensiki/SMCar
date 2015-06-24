@@ -159,8 +159,8 @@ uchar Get_Distance(void)
 	while(TH1<250 && Echo!= 1);	  
 	if(TH1 <= 250)	//测距范围<0.5M
 	{
-	   TH1 = 0;
-	   TL1 = 0;
+		TH1 = 0;
+    TL1 = 0;
 	   while(Echo == 1);
 	   Distance = TH1;
 	   Distance = Distance*256;
@@ -173,12 +173,6 @@ uchar Get_Distance(void)
 //巡线模式
 void FollowLine(void)
 {
-		  if(Get_Distance()<0x0A)
-		{
-			stop();//停止 
-		}
-			else
-		{
 
 	 if(right5==m1){line_right();}
    else 
@@ -193,7 +187,7 @@ void FollowLine(void)
 			 else
 				 stop();
 
-		}
+		
 }
 //通过雷达避障
 void AvoidByRadar(void)
@@ -229,10 +223,22 @@ void Cruising_Mod(void)
 		 }
 
     	 Pre_Cruising_Flag =  Cruising_Flag;
+		 
 	 }	
 
 	switch(Cruising_Flag)
 	{
+		case 0x00:
+			if((Get_Distance()<0x10)&&(Robots_Run_Status==0x03))
+		 {
+			 MOTOR_GO_STOP;
+			 MAINLIGHT_TURNON;
+		 }
+		 else
+		 {
+			 MAINLIGHT_TURNOFF;
+		 }
+		break;
 	   case 0x01:Follow_Track(); break;//跟随模式
 	   case 0x02:FollowLine(); break;//巡线模式
 	   case 0x03:Avoiding(); break;//避障模式
@@ -312,6 +318,7 @@ void straight()	//直行
   MOTOR_A_CON2=1;	
   MOTOR_B_CON1=0;	
   MOTOR_B_CON2=1; 
+	Robots_Run_Status=0x03;
 }
 void stop()	//停止
 {

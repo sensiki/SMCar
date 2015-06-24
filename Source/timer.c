@@ -9,6 +9,8 @@ By WIFI机器人网·机器人创意工作室
 #include "steer.h"
 #include "IR.h"
 #include "MEM.h"
+#include "motor.h"
+#include "OLED12864.h"
 
 uchar m=0,n=0;
 uchar Duty_left=80,Duty_right=80; //左右占空比标志，取1--100
@@ -22,6 +24,8 @@ extern bit IR_EN;
 uint16 Uart_timeout_count=0;
 extern void Steering_Engine_Control(void);
 uint16 se_timer[8]={SE1_Deg,SE2_Deg,SE3_Deg,SE4_Deg,SE5_Deg,SE6_Deg,SE7_Deg,SE8_Deg};
+extern uchar  Robots_Run_Status;
+
 /* ms 延时 */
 void Delay_Ms(uint32 t)
 {  
@@ -38,8 +42,8 @@ void Timer0_Init(void)
     TMOD   |=   0x01; 
 	AUXR   |=   0XC0;
 	IP   |=   0x02;//定时器0中断优先级最高
-	TH0=(65536-66)/256;
-   TL0=(65536-66)%256;
+	TH0=(115200-66)/256;
+   TL0=(115200-66)%256;
 
 	TR0=1;
 	ET0=1;
@@ -50,8 +54,8 @@ void Timer1_Init(void)
     ET1     =	  1;
     TMOD   &=   0x0f; 
     TMOD   |=   0x10;   
-    TH1     =   0xA9;   //1MS定时
-    TL1     =   0x9A;
+    TH1     =   (115200-100000)%256;   
+    TL1     =   (115200-100000)%256;
     TR1     =   1;    //开定时器1
 
 }
@@ -70,20 +74,23 @@ void Timer_0(void) interrupt 1
   else MOTOR_B_EN=0;
   if(n>100) 
      {MOTOR_B_EN=1;n=0;}
-TH0=(65536-66)/256;	   //取约150HZ，12M晶振，每次定时66us，分100次，这样开头定义的变量正好直接表示占空比的数值
-TL0=(65536-66)%256;
+		 
+	
+		 
+TH0=(115200-66)/256;	   //取约150HZ，12M晶振，每次定时66us，分100次，这样开头定义的变量正好直接表示占空比的数值
+TL0=(115200-66)%256;
 
 }
 
 void Timer_1(void) interrupt 3
 {
-    static uint16 ms_count=0;
+static uint16 ms_count=0;
 
-	TH1     =   0xA9;   
-    TL1     =   0x9A;
+	    TH1     =   (115200-100000)%256;   
+    TL1     =   (115200-100000)%256;
 
 	Uart_timeout_count++;
-	if((Uart_timeout_count == 1000) && (rec_flag)) //串口接收1秒超时
+	if((Uart_timeout_count == 10) && (rec_flag)) //串口接收1秒超时
 	{
 		rec_flag = 0;
 	}
@@ -100,7 +107,6 @@ void Timer_1(void) interrupt 3
 		     LED5 = 1;
 		 }
 	}
-	
 }
 void Init_Steer(void)
 {

@@ -27,14 +27,15 @@ Project File Date:  06/17/2015
 <h2>Output:</h2>
 Rebuild target 'Target 1'
 compiling main.c...
-Source\main.c(44): warning C206: 'Cruising_Mod': missing function-prototype
-Source\main.c(47): warning C316: unterminated conditionals
+Source\main.c(47): warning C206: 'Cruising_Mod': missing function-prototype
+Source\main.c(50): warning C316: unterminated conditionals
 compiling motor.c...
-Source\motor.c(424): warning C316: unterminated conditionals
+Source\motor.c(431): warning C316: unterminated conditionals
 Source\motor.c(172): warning C291: not every exit path returns a value
 compiling timer.c...
+Source\timer.c(120): warning C316: unterminated conditionals
 compiling uart.c...
-Source\uart.c(230): warning C316: unterminated conditionals
+Source\uart.c(252): warning C316: unterminated conditionals
 compiling SelfTest.c...
 compiling OLED12864.c...
 Source\OLED12864.c(192): warning C316: unterminated conditionals
@@ -43,6 +44,8 @@ linking...
     SEGMENT: ?PR?SEND_DISTANCE?MOTOR
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_DELAY_FORBARRIER?MOTOR
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?INIT_STEER?TIMER
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_UART_SEND?UART
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
@@ -57,9 +60,9 @@ linking...
     SEGMENT: ?PR?_LCD_P6X8STR?OLED12864
     CALLER1: ?PR?UART_INTERRUPT_RECEIVE?UART
     CALLER2: ?C_C51STARTUP
-Program Size: data=84.3 xdata=203 code=8817
+Program Size: data=85.3 xdata=203 code=9078
 creating hex file from "motor_con"...
-"motor_con" - 0 Error(s), 14 Warning(s).
+"motor_con" - 0 Error(s), 16 Warning(s).
 </pre>
 </body>
 </html>
